@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kitchen</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf6ef;
+    --warm-white: #fdfaf5;
+    --terracotta: #c4694a;
+    --sage: #7a9b76;
+    --dusty-gold: #c9a84c;
+    --dark: #2c2416;
+    --mid: #6b5b45;
+    --light-mid: #b8a48e;
+    --card-bg: #fff8f0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--light-mid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  .container {
+    max-width: 540px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  header { margin-bottom: 48px; }
+
+  .title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(52px, 14vw, 84px);
+    font-weight: 600;
+    color: var(--terracotta);
+    line-height: 0.9;
+    letter-spacing: -2px;
+  }
+
+  .subtitle {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(15px, 4vw, 18px);
+    color: var(--mid);
+    margin-top: 10px;
+    letter-spacing: 0.01em;
+  }
+
+  .big-button-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 44px;
+  }
+
+  .big-button-shadow {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: #a04a28;
+    transform: translate(6px, 6px);
+    transition: transform 0.15s ease;
+  }
+
+  .big-button {
+    position: relative;
+    z-index: 1;
+    width: clamp(170px, 45vw, 210px);
+    height: clamp(170px, 45vw, 210px);
+    border-radius: 50%;
+    background: #c9693a;
+    border: none;
+    cursor: pointer;
+    font-family: 'Fraunces', serif;
+    font-size: clamp(14px, 4vw, 17px);
+    font-weight: 600;
+    color: var(--dark);
+    line-height: 1.3;
+    letter-spacing: -0.3px;
+    transition: transform 0.15s ease, background 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 24px;
+  }
+
+  .big-button:hover { background: #d4724a; }
+
+  .big-button:hover ~ .big-button-shadow,
+  .big-button:active ~ .big-button-shadow { transform: translate(3px, 3px); }
+
+  .big-button:active { transform: translate(3px, 3px); }
+
+  .button-icon { font-size: clamp(28px, 8vw, 38px); line-height: 1; display: block; }
+
+  .button-label {
+    display: block;
+    font-size: clamp(12px, 3.5vw, 15px);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    color: var(--mid);
+  }
+
+  .result-card {
+    background: var(--card-bg);
+    border: 2px solid var(--light-mid);
+    border-radius: 20px;
+    padding: 32px 28px;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--terracotta), var(--dusty-gold), var(--sage));
+    border-radius: 20px 20px 0 0;
+  }
+
+  .result-card.visible { opacity: 1; transform: translateY(0); }
+
+  .result-emoji {
+    font-size: 56px;
+    line-height: 1;
+    display: block;
+    animation: none;
+  }
+
+  .result-emoji.spin { animation: spinEmoji 0.6s ease-out; }
+
+  @keyframes spinEmoji {
+    0%   { transform: rotate(-20deg) scale(0.5); opacity: 0.3; }
+    60%  { transform: rotate(5deg) scale(1.15); }
+    100% { transform: rotate(0deg) scale(1); opacity: 1; }
+  }
+
+  .result-text {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(22px, 7vw, 30px);
+    font-weight: 600;
+    color: var(--dark);
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+  }
+
+  .result-note {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(13px, 3.5vw, 15px);
+    color: var(--mid);
+  }
+
+  .reel-container {
+    height: 60px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .reel-track {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: none;
+  }
+
+  .reel-item {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: clamp(20px, 6vw, 26px);
+    font-weight: 600;
+    color: var(--dark);
+    white-space: nowrap;
+    flex-shrink: 0;
+    width: 100%;
+  }
+
+  footer {
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--light-mid);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="title">Kitchen</div>
+    <div class="subtitle">Why did I come in here?</div>
+  </header>
+
+  <div class="big-button-wrap">
+    <button class="big-button" id="askBtn" onclick="spin()">
+      <span class="button-icon" style="display:none">🚶</span>
+      <span class="button-label" style="display:none">tap to find out</span>
+    </button>
+    <div class="big-button-shadow"></div>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="reel-container" id="reelContainer" style="display:none">
+      <div class="reel-track" id="reelTrack"></div>
+    </div>
+    <span class="result-emoji" id="resultEmoji"></span>
+    <div class="result-text" id="resultText"></div>
+    <div class="result-note" id="resultNote"></div>
+  </div>
+
+  <footer>Tap the button to find out.</footer>
+</div>
+
+<script>
+  // ——— ADD MORE REASONS HERE ———
+  const reasons = [
+    { text: "Ashwagandha",                               emoji: "🌿", note: "Ashwagandha be kidding me!" },
+    { text: "Pineapple pill",                            emoji: "🍍", note: "You know the one!" },
+    { text: "Apple",                                     emoji: "🍎", note: "How do you like them apples!" },
+    { text: "Prunes and Brazil nuts",                    emoji: "🌰", note: "Am I nuts?? Or do these two belong together!" },
+    { text: "Kombucha Water",                            emoji: "🫙", note: "It's like Kombucha, but watery-er!" },
+    { text: "Wash some dishes",                          emoji: "🧼", note: "Remember: You like this." },
+    { text: "Why don't you wash some whites?",           emoji: "🧺", note: "" },
+    { text: "Why don't you wash some darks?",            emoji: "👕", note: "" },
+    { text: "Get a muffin",                              emoji: "🧁", note: "Add some peanut butter why don't you!" },
+    { text: "Get a knife to open that package",          emoji: "📦", note: "" },
+    { text: "Eat a few chocolate chips",                 emoji: "🍪", note: "Just a few, please!" },
+    { text: "Get a Larabar!",                            emoji: "🍫", note: "Thank you Lara." },
+    { text: "Fry an egg",                                emoji: "🍳", note: "" },
+    { text: "Boil some eggs",                            emoji: "🥚", note: "Your future-self will thank you." },
+    { text: "Grind some coffee",                         emoji: "☕", note: "" },
+    { text: "Check banana ripeness",                     emoji: "🍌", note: "" },
+    { text: "Make banana sorbet",                        emoji: "🍦", note: "" },
+    { text: "Check the peanut butter stock",             emoji: "🥜", note: "Only a dozen jars? Order another case!" },
+    { text: "Start the kettle",                          emoji: "🫖", note: "" },
+    { text: "Move clothes from the washer to the dryer", emoji: "🧺", note: "" },
+    { text: "Put raisins in a jar",                      emoji: "🫙", note: "From the box." },
+    { text: "Check the time",                            emoji: "🕰️", note: "Is it 7:23 yet?" },
+    { text: "Check salt shakers",                        emoji: "🧂", note: "Lookin' a little low, aren't they?" },
+    { text: "Do arm-stretches on the stairs",            emoji: "🙆", note: "" },
+    { text: "Turn off that radio!",                      emoji: "📻", note: "" },
+    { text: "Close the blinds",                          emoji: "🪟", note: "Too bright out there!" },
+    { text: "Brush your teeth",                          emoji: "🪥", note: "Wrong room!" },
+  ];
+  // ——————————————————————————————
+
+  let isSpinning = false;
+  let lastIndex = -1;
+
+  function getRandomReason() {
+    let idx;
+    do { idx = Math.floor(Math.random() * reasons.length); }
+    while (idx === lastIndex && reasons.length > 1);
+    lastIndex = idx;
+    return reasons[idx];
+  }
+
+  function spin() {
+    if (isSpinning) return;
+    isSpinning = true;
+
+    const card = document.getElementById('resultCard');
+    const reelContainer = document.getElementById('reelContainer');
+    const reelTrack = document.getElementById('reelTrack');
+    const emoji = document.getElementById('resultEmoji');
+    const text = document.getElementById('resultText');
+    const note = document.getElementById('resultNote');
+    const btn = document.getElementById('askBtn');
+
+    btn.disabled = true;
+    card.classList.add('visible');
+
+    emoji.style.display = 'none';
+    text.style.display = 'none';
+    note.style.display = 'none';
+    reelContainer.style.display = 'flex';
+
+    const shuffled = [];
+    for (let i = 0; i < 12; i++) {
+      shuffled.push(reasons[Math.floor(Math.random() * reasons.length)]);
+    }
+
+    reelTrack.innerHTML = '';
+    shuffled.forEach(r => {
+      const el = document.createElement('div');
+      el.className = 'reel-item';
+      el.textContent = r.emoji + '  ' + r.text;
+      reelTrack.appendChild(el);
+    });
+
+    let current = 0;
+    const itemHeight = 60;
+    let delay = 60;
+    const maxDelay = 200;
+
+    function step() {
+      reelTrack.style.transform = `translateY(-${current * itemHeight}px)`;
+      reelTrack.style.transition = `transform ${delay * 0.8}ms ease`;
+      current++;
+      delay = Math.min(delay * 1.12, maxDelay);
+
+      if (current < shuffled.length - 1) {
+        setTimeout(step, delay);
+      } else {
+        const chosen = getRandomReason();
+        setTimeout(() => {
+          reelContainer.style.display = 'none';
+          emoji.textContent = chosen.emoji;
+          text.textContent = chosen.text;
+          note.textContent = chosen.note;
+
+          emoji.style.display = 'block';
+          text.style.display = 'block';
+          note.style.display = chosen.note ? 'block' : 'none';
+
+          emoji.classList.remove('spin');
+          void emoji.offsetWidth;
+          emoji.classList.add('spin');
+
+          isSpinning = false;
+          btn.disabled = false;
+        }, 320);
+      }
+    }
+
+    step();
+  }
+</script>
+</body>
+</html>
